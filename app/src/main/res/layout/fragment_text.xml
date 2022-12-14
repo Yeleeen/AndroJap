@@ -6,9 +6,24 @@
     tools:context=".TextFragment">
 
     <!-- TODO: Update blank fragment layout -->
+
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="@string/hello_blank_fragment" />
+
+    <Button
+        android:id="@+id/pastButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Past" />
+
+    <TextView
+        android:id="@+id/pastedText"
+        android:layout_width="157dp"
+        android:layout_height="148dp"
+        android:text="Text" />
+
 
 </FrameLayout>
