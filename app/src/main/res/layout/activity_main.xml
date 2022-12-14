@@ -14,12 +14,14 @@
         app:tabGravity="fill"
         app:tabIndicatorGravity="stretch"
         app:tabSelectedTextColor="@color/white"
+        app:tabIndicatorColor="@color/red"
         app:tabIndicatorAnimationMode="elastic"
         app:tabIndicator="@drawable/tabdrawable"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+
         android:id="@+id/viewPager2"/>
 
 

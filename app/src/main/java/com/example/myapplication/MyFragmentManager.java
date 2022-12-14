@@ -16,14 +16,21 @@ public class MyFragmentManager extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        if (position == 1){
+        if (position == 0){
             return new TextFragment();
         }
-        return new ListFragment();
+        if (position == 1){
+            return new ListFragment();
+        }
+        else {
+            return new VocFragment();
+        }
+
+
     }
 
     @Override
     public int getItemCount() {
-        return 2;
+        return 3;
     }
 }

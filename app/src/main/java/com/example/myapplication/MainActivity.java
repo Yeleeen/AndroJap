@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout.addTab(tabLayout.newTab().setText("Text"));
         tabLayout.addTab(tabLayout.newTab().setText("List"));
+        tabLayout.addTab(tabLayout.newTab().setText("Voc"));
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         adapter = new MyFragmentManager(fragmentManager , getLifecycle());
