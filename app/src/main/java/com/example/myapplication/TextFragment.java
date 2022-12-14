@@ -62,8 +62,8 @@ public class TextFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
 
-        pastText = (TextView) getActivity().findViewById(R.id.pastedText);
-        pastingButton = (Button) getActivity().findViewById(R.id.pastButton);
+        pastText = (TextView) getView().findViewById(R.id.pastedText);
+        pastingButton = (Button) getView().findViewById(R.id.pastButton);
 
         clipboardManager =(ClipboardManager)  getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
 
