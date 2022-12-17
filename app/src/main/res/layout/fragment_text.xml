@@ -3,15 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TextFragment">
+    android:paddingHorizontal="@dimen/_18sdp"
+    android:paddingTop="@dimen/_30sdp"
+    tools:context=".TextFragment"
+    android:focusable="true"
+    android:id="@+id/mainLayout">
 
     <!-- TODO: Update blank fragment layout -->
 
 
-    <TextView
+    <!--<TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:text="@string/hello_blank_fragment" />-->
 
     <Button
         android:id="@+id/pastButton"
@@ -20,12 +24,82 @@
         android:layout_gravity="center|bottom"
 
         android:text="Past" />
+    <Button
+        android:id="@+id/stopEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
 
-    <TextView
+        android:text="Edit" />
+    <Button
+        android:id="@+id/kana"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|bottom"
+
+        android:text="Edit" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        android:fillViewport="true"
+        android:id="@+id/scrollView"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_50sdp"
+
+                android:contentDescription="TODO" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_17ssp"
+            android:hint="Title"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:inputType="textMultiLine"
+            android:overScrollMode="always"
+            android:scrollbarStyle="insideInset"
+            android:scrollbars="vertical"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:scrollHorizontally="false"
+            />
+    <EditText
+        android:id="@+id/textArea"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:lineSpacingExtra="@dimen/_8sdp"
+        android:background="@null"
+        android:gravity="top"
+        android:paddingVertical="@dimen/_12sdp"
+
+        android:inputType="textMultiLine"
+        android:overScrollMode="always"
+        android:scrollbarStyle="insideInset"
+        android:scrollbars="vertical"
+
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:scrollHorizontally="false" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_50sdp"
+
+                android:contentDescription="TODO" />
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!--<TextView
         android:id="@+id/pastedText"
         android:layout_width="157dp"
         android:layout_height="148dp"
-        android:text="Text" />
+        android:text="Text" />-->
 
 
 </FrameLayout>

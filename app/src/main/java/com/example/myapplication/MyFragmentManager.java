@@ -17,10 +17,11 @@ public class MyFragmentManager extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         if (position == 0){
-            return new TextFragment();
+            return new ListFragment();
         }
         if (position == 1){
-            return new ListFragment();
+            return new TextFragment();
+
         }
         else {
             return new VocFragment();
