@@ -1,7 +1,9 @@
 package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -32,6 +34,7 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
 
         tabLayout = findViewById(R.id.tabLayout);
@@ -79,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
         screen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
                 Log.d("ok","detection");
                 Log.d("Le swipe est il activé ?",Boolean.toString(viewPager2.isUserInputEnabled()));
                 viewPager2.setUserInputEnabled(false);

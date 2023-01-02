@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -16,47 +17,42 @@ import java.util.List;
  * {@link RecyclerView.Adapter} that can display a {@link PlaceholderItem}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
+public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.MyViewHolder> {
 
-    private final List<PlaceholderItem> mValues;
 
-    public MyItemRecyclerViewAdapter(List<PlaceholderItem> items) {
-        mValues = items;
+    private List<TextData> text;
+
+    public MyItemRecyclerViewAdapter(List<TextData> text) {
+    this.text = text;
     }
+
+    @NonNull
+    @Override
+    public MyItemRecyclerViewAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_container_note,parent,false);
+        return new MyViewHolder(view);
+    }
+
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        holder.titleTextView.setText(text.get(position).getTitle());
 
-        return new ViewHolder(FragmentItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
 
     }
 
-    @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
-    }
+
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return 0;
     }
+    class MyViewHolder extends RecyclerView.ViewHolder{
+        TextView titleTextView;
+        public MyViewHolder(View view){
+            super(view);
+            titleTextView = view.findViewById(R.id.textTitle);
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public PlaceholderItem mItem;
-
-        public ViewHolder(FragmentItemBinding binding) {
-            super(binding.getRoot());
-            mIdView = binding.itemNumber;
-            mContentView = binding.content;
-        }
-
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
         }
     }
 }

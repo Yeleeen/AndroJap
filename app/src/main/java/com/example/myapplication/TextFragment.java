@@ -5,19 +5,28 @@ import static android.content.Context.CLIPBOARD_SERVICE;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 
 import androidx.constraintlayout.motion.widget.Debug;
+import androidx.core.text.HtmlCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.os.SystemClock;
+import android.text.Html;
 import android.text.Layout;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -29,8 +38,11 @@ import android.widget.TextView;
 import com.atilika.kuromoji.ipadic.Token;
 import com.atilika.kuromoji.ipadic.Tokenizer;
 import com.example.myapplication.Class.Kana;
+import com.example.myapplication.Class.RubySpan;
+
 
 import java.util.List;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,7 +54,10 @@ public class TextFragment extends Fragment {
     public Button pastingButton;
     public Button editButton;
     public Button kanaButton;
+
+    Kana kanaString = new Kana();
     public boolean focus = true;
+    Tokenizer tokenizer = new Tokenizer() ;
     ClipboardManager clipboardManager;
     EditText pastText;
     ViewPager2 viewPager2;
@@ -101,63 +116,66 @@ public class TextFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_text, container, false);
         View mainView = inflater.inflate(R.layout.activity_main,container,false);
         pastText = (EditText) view.findViewById(R.id.textArea);
-        View zoneText = view.findViewById(R.id.scrollView);
         pastingButton = (Button) view.findViewById(R.id.pastButton);
         editButton = (Button) view.findViewById(R.id.stopEdit);
         kanaButton = (Button) view.findViewById(R.id.kana);
+
         clipboardManager = (ClipboardManager) view.getContext().getSystemService(CLIPBOARD_SERVICE);
-        Bitmap bitmap = Bitmap.createBitmap(100,100, Bitmap.Config.ARGB_8888);
+        final ViewPager2 viewPager2 = mainView.findViewById(R.id.viewPager2);
 
 
-        viewPager2 = mainView.findViewById(R.id.viewPager2);
 
         EditText screen = view.findViewById(R.id.textArea);
         screen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                simulateSwipeLeft(view);
                 Log.d("ok","detection");
                 Log.d("Le swipe est il activé ?",Boolean.toString(viewPager2.isUserInputEnabled()));
                 viewPager2.setUserInputEnabled(false);
             }
         });
 
+
         kanaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Layout layout = pastText.getLayout();
-                if (layout == null) {
-                }
-                Paint paint = new Paint();
-                paint.setColor(Color.BLACK);
-                paint.setTextSize(20);
+                int cursor = 0;
+                String textToFurigana = pastText.getText().toString();
+                SpannableStringBuilder ssb = new SpannableStringBuilder(textToFurigana);
+                List<Token> tokens = tokenizer.tokenize(textToFurigana);
+                for (Token token : tokens) {
+                    System.out.println(token.getSurface() +"        "+ kanaString.isKana(token.getSurface()) + "       " + token.getAllFeatures());
+                    if(kanaString.isKana(token.getSurface())){
+                        ssb.setSpan(new RubySpan(kanaString.kataToHira(token.getReading())),cursor,cursor+token.getSurface().length(),Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                Canvas canvas = new Canvas(bitmap);
-                canvas.drawPaint(paint);
-                canvas.drawText("lalal",0,0,paint);
-                int offset = 0;
-                int lineOfText = layout.getLineForOffset(5);
-                int xCoordinate = (int) layout.getPrimaryHorizontal(offset);
-                int yCoordinate = layout.getLineTop(lineOfText);
-                System.out.println(xCoordinate);
-                System.out.println(yCoordinate);
+
+                    }
+                    cursor = cursor + token.getSurface().length();
+                }
+                pastText.setText(ssb);
+
             }
         });
         pastingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 ClipData a = clipboardManager.getPrimaryClip();
                 ClipData.Item item = a.getItemAt(0);
                 String text = item.getText().toString();
-                Tokenizer tokenizer = new Tokenizer() ;
-                Kana kanaString = new Kana();
-                List<Token> tokens = tokenizer.tokenize("お寿司が食べたい。");
+
+
+                List<Token> tokens = tokenizer.tokenize(text);
                 String newPastText = "";
+
                 for (Token token : tokens) {
-                    System.out.println(token.getSurface() + "\t" + token.getAllFeatures());
+
+                    //System.out.println(token.getSurface() + "        "+ token.getReading() + "       "+ token.getPronunciation() + "       " + token.getAllFeatures());
                     newPastText = newPastText + token.getSurface() +"     " + kanaString.kataToHira( token.getPronunciation())+ token.getReading()+ "\n";
 
                 }
-                pastText.setText(newPastText);
+                pastText.setText(text);
 
 
 
@@ -167,6 +185,8 @@ public class TextFragment extends Fragment {
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                simulateSwipeLeft(view);
+                
 
                 if(focus == true) {
                     pastText.setFocusable(false);
@@ -183,5 +203,33 @@ public class TextFragment extends Fragment {
         });
 
         return view;
+    }
+    public void simulateSwipeLeft(View view) {
+        // Get a reference to the view
+
+
+        // Define the start and end points for the swipe
+        int startX = view.getLeft();
+        int startY = view.getTop();
+        int endX = view.getLeft() - view.getWidth();
+        int endY = view.getTop();
+
+        // Create a MotionEvent object for the start of the swipe
+        long downTime = SystemClock.uptimeMillis();
+        long eventTime = SystemClock.uptimeMillis() + 100;
+        float x = startX;
+        float y = startY;
+        int metaState = 0;
+        MotionEvent downEvent = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, x, y, metaState);
+
+        // Create a MotionEvent object for the end of the swipe
+        long upTime = eventTime + 1000;
+        x = endX;
+        y = endY;
+        MotionEvent upEvent = MotionEvent.obtain(downTime, upTime, MotionEvent.ACTION_UP, x, y, metaState);
+
+        // Send the touch events to the view
+        view.dispatchTouchEvent(downEvent);
+        view.dispatchTouchEvent(upEvent);
     }
 }

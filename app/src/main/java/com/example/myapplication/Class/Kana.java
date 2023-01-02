@@ -16,11 +16,53 @@ public class Kana {
         if (katakanaString == "") {
             return "";
         }
-        for(int i = 0; i<katakanaString.length(); i++){
 
-            hiraganaString = hiraganaString + hiragana.charAt(katakana.indexOf(katakanaString.charAt(i)));
+        for(int i = 0; i<katakanaString.length(); i++){
+            if (isCharKatakana(katakanaString.charAt(i))) {
+                hiraganaString = hiraganaString + hiragana.charAt(katakana.indexOf(katakanaString.charAt(i)));
+            }
+            else{
+                hiraganaString = hiraganaString + katakanaString.charAt(i);
+            }
+
         }
         return hiraganaString;
 
+    }
+    public boolean isCharKatakana(char kana){
+        for (int j=0;j<katakana.length();j++) {
+            if (kana == katakana.charAt(j)) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+    public boolean isCharHiragana(char kana){
+        for (int j=0;j<hiragana.length();j++) {
+            if (kana == hiragana.charAt(j)) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+    public boolean isCharKana(char kana){
+        for (int j=0;j<hiragana.length();j++) {
+            if (kana == hiragana.charAt(j) || kana == katakana.charAt(j)) {
+                return true;
+            }
+    }
+        return false;
+    }
+    public boolean isKana(String string){
+        for(int i=0;i<string.length();i++){
+            if (!isCharHiragana(string.charAt(i))){
+                return true;
+            }
+        }
+
+
+        return false;
     }
 }

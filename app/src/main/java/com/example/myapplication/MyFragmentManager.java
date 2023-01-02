@@ -13,11 +13,13 @@ public class MyFragmentManager extends FragmentStateAdapter {
         super(fragmentManager, lifecycle);
     }
 
+
+
     @NonNull
     @Override
     public Fragment createFragment(int position) {
         if (position == 0){
-            return new ListFragment();
+            return new itemFragment();
         }
         if (position == 1){
             return new TextFragment();
