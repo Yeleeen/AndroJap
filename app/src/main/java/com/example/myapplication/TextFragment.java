@@ -5,6 +5,7 @@ import static android.content.Context.CLIPBOARD_SERVICE;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -54,6 +55,9 @@ public class TextFragment extends Fragment {
     public Button pastingButton;
     public Button editButton;
     public Button kanaButton;
+
+    SharedPreferences sharedPref;
+    SharedPreferences.Editor editor;
 
     Kana kanaString = new Kana();
     public boolean focus = true;
@@ -121,6 +125,9 @@ public class TextFragment extends Fragment {
         kanaButton = (Button) view.findViewById(R.id.kana);
 
         clipboardManager = (ClipboardManager) view.getContext().getSystemService(CLIPBOARD_SERVICE);
+        sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
+
         final ViewPager2 viewPager2 = mainView.findViewById(R.id.viewPager2);
 
 
@@ -129,7 +136,7 @@ public class TextFragment extends Fragment {
         screen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                simulateSwipeLeft(view);
+
                 Log.d("ok","detection");
                 Log.d("Le swipe est il activé ?",Boolean.toString(viewPager2.isUserInputEnabled()));
                 viewPager2.setUserInputEnabled(false);
@@ -137,10 +144,12 @@ public class TextFragment extends Fragment {
         });
 
 
+
         kanaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int cursor = 0;
+                saveText(view);
                 String textToFurigana = pastText.getText().toString();
                 SpannableStringBuilder ssb = new SpannableStringBuilder(textToFurigana);
                 List<Token> tokens = tokenizer.tokenize(textToFurigana);
@@ -185,8 +194,8 @@ public class TextFragment extends Fragment {
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                simulateSwipeLeft(view);
-                
+
+                loadText(view);
 
                 if(focus == true) {
                     pastText.setFocusable(false);
@@ -203,6 +212,16 @@ public class TextFragment extends Fragment {
         });
 
         return view;
+    }
+    public void saveText(View view) {
+        String text = pastText.getText().toString();
+        editor.putString("saved_text", text);
+        editor.apply();
+    }
+
+    public void loadText(View view) {
+        String savedText = sharedPref.getString("saved_text", "");
+        pastText.setText(savedText);
     }
     public void simulateSwipeLeft(View view) {
         // Get a reference to the view

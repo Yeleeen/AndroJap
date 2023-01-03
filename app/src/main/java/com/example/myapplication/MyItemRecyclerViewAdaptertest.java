@@ -41,6 +41,7 @@ public class MyItemRecyclerViewAdaptertest extends RecyclerView.Adapter<MyItemRe
             @Override
             public void onClick(View view) {
                 System.out.println(holder.mItem);
+
             }
         });
     }

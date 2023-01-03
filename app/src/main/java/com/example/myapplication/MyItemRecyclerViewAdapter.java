@@ -20,9 +20,9 @@ import java.util.List;
 public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.MyViewHolder> {
 
 
-    private List<TextData> text;
+    private List<Text> text;
 
-    public MyItemRecyclerViewAdapter(List<TextData> text) {
+    public MyItemRecyclerViewAdapter(List<Text> text) {
     this.text = text;
     }
 

@@ -20,7 +20,7 @@ import java.util.ArrayList;
  */
 public class ListFragment extends Fragment{
 
-    private ArrayList<TextData> texts = new ArrayList<TextData>();
+    private ArrayList<Text> texts = new ArrayList<Text>();
 
     public ListFragment() {
         // Required empty public constructor
@@ -71,9 +71,9 @@ public class ListFragment extends Fragment{
     //TESTING TO DELETE AFTER
 
     private void buildTextList(){
-        texts.add(new TextData("Salut"));
-        texts.add(new TextData("J'ai faim"));
-        texts.add(new TextData("à l'aide"));
+        texts.add(new Text("Salut"));
+        texts.add(new Text("J'ai faim"));
+        texts.add(new Text("à l'aide"));
 
     }
 }
