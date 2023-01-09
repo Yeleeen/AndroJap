@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
+import static android.content.Context.MODE_PRIVATE;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -61,6 +62,7 @@ public class TextFragment extends Fragment {
     public ArrayList<Text> textList = new ArrayList<Text>();
 
     SharedPreferences sharedPref;
+    SharedPreferences sharedPrefTextId;
     SharedPreferences.Editor editor;
 
     Kana kanaString = new Kana();
@@ -131,8 +133,11 @@ public class TextFragment extends Fragment {
         kanaButton = (Button) view.findViewById(R.id.kana);
         saveButton = (Button) view.findViewById(R.id.save);
 
+
+
         clipboardManager = (ClipboardManager) view.getContext().getSystemService(CLIPBOARD_SERVICE);
-        sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        sharedPref = getActivity().getSharedPreferences("MY_SHARED_PREF",Context.MODE_PRIVATE);
+        sharedPrefTextId = getActivity().getSharedPreferences("TEXTID", MODE_PRIVATE);
         editor = sharedPref.edit();
 
         final ViewPager2 viewPager2 = mainView.findViewById(R.id.viewPager2);
@@ -153,7 +158,7 @@ public class TextFragment extends Fragment {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveText(view);
+                saveText(sharedPrefTextId.getString("textID", "0"));
 
 
             }
@@ -227,12 +232,13 @@ public class TextFragment extends Fragment {
 
         return view;
     }
-    public void saveText(View view) {
+    public void saveText(String textId) {
 
             String text = pastText.getText().toString();
-            editor.putString("saved_text", text);
+            editor.putString(textId, text);
             editor.apply();
-            String savedText = sharedPref.getString("saved_text", "Default");
+            String savedText = sharedPref.getString(textId, "Default");
+            System.out.println(textId);
             System.out.println(savedText);
         }
 
@@ -242,10 +248,19 @@ public class TextFragment extends Fragment {
 
 
 
-    public void loadText(View view,Text note) {
-        String savedText = sharedPref.getString(note.getId(), "");
+    public void loadText(String textId) {
+        String savedText = sharedPref.getString(textId, "Default");
         pastText.setText(savedText);
     }
+
+    public void addText(){
+
+    }
+    public void setEditText(String text) {
+        pastText.setText(text);
+    }
+
+
     public void simulateSwipeLeft(View view) {
         // Get a reference to the view
 

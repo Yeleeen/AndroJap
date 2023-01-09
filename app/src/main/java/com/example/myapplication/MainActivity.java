@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
         viewPager2.setAdapter(adapter);
 
 
+
+
         try {
             final Field recyclerViewField = ViewPager2.class.getDeclaredField("mRecyclerView");
             recyclerViewField.setAccessible(true);
