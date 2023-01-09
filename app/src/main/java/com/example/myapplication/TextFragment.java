@@ -42,6 +42,7 @@ import com.example.myapplication.Class.Kana;
 import com.example.myapplication.Class.RubySpan;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -55,6 +56,9 @@ public class TextFragment extends Fragment {
     public Button pastingButton;
     public Button editButton;
     public Button kanaButton;
+    public Button saveButton;
+
+    public ArrayList<Text> textList = new ArrayList<Text>();
 
     SharedPreferences sharedPref;
     SharedPreferences.Editor editor;
@@ -64,6 +68,7 @@ public class TextFragment extends Fragment {
     Tokenizer tokenizer = new Tokenizer() ;
     ClipboardManager clipboardManager;
     EditText pastText;
+    EditText titleText;
     ViewPager2 viewPager2;
 
 
@@ -120,9 +125,11 @@ public class TextFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_text, container, false);
         View mainView = inflater.inflate(R.layout.activity_main,container,false);
         pastText = (EditText) view.findViewById(R.id.textArea);
+        titleText = (EditText) view.findViewById(R.id.title);
         pastingButton = (Button) view.findViewById(R.id.pastButton);
         editButton = (Button) view.findViewById(R.id.stopEdit);
         kanaButton = (Button) view.findViewById(R.id.kana);
+        saveButton = (Button) view.findViewById(R.id.save);
 
         clipboardManager = (ClipboardManager) view.getContext().getSystemService(CLIPBOARD_SERVICE);
         sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
@@ -143,13 +150,21 @@ public class TextFragment extends Fragment {
             }
         });
 
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveText(view);
+
+
+            }
+        });
 
 
         kanaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int cursor = 0;
-                saveText(view);
+
                 String textToFurigana = pastText.getText().toString();
                 SpannableStringBuilder ssb = new SpannableStringBuilder(textToFurigana);
                 List<Token> tokens = tokenizer.tokenize(textToFurigana);
@@ -195,7 +210,6 @@ public class TextFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                loadText(view);
 
                 if(focus == true) {
                     pastText.setFocusable(false);
@@ -214,13 +228,22 @@ public class TextFragment extends Fragment {
         return view;
     }
     public void saveText(View view) {
-        String text = pastText.getText().toString();
-        editor.putString("saved_text", text);
-        editor.apply();
-    }
 
-    public void loadText(View view) {
-        String savedText = sharedPref.getString("saved_text", "");
+            String text = pastText.getText().toString();
+            editor.putString("saved_text", text);
+            editor.apply();
+            String savedText = sharedPref.getString("saved_text", "Default");
+            System.out.println(savedText);
+        }
+
+
+
+
+
+
+
+    public void loadText(View view,Text note) {
+        String savedText = sharedPref.getString(note.getId(), "");
         pastText.setText(savedText);
     }
     public void simulateSwipeLeft(View view) {

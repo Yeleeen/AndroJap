@@ -1,7 +1,11 @@
 package com.example.myapplication;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,9 +24,17 @@ import java.util.List;
 public class MyItemRecyclerViewAdaptertest extends RecyclerView.Adapter<MyItemRecyclerViewAdaptertest.ViewHolder> {
 
     private final List<PlaceholderItem> mValues;
+    private Context mContext;
 
-    public MyItemRecyclerViewAdaptertest(List<PlaceholderItem> items) {
+    public MyItemRecyclerViewAdaptertest(List<PlaceholderItem> items, Context context) {
         mValues = items;
+        mContext = context;
+    }
+    public String retrieveSharedPreferencesData() {
+
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences("MY_SHARED_PREF", MODE_PRIVATE);
+
+        return sharedPreferences.getString("saved_text", "Default*");
     }
 
     @Override
@@ -41,6 +53,12 @@ public class MyItemRecyclerViewAdaptertest extends RecyclerView.Adapter<MyItemRe
             @Override
             public void onClick(View view) {
                 System.out.println(holder.mItem);
+                retrieveSharedPreferencesData();
+                SharedPreferences sharedPreferences = mContext.getSharedPreferences("MY_SHARED_PREF", MODE_PRIVATE);
+
+                String myString = retrieveSharedPreferencesData();
+                System.out.println(myString);
+                System.out.println("Touch");
 
             }
         });
