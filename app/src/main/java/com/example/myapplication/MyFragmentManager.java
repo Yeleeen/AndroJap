@@ -26,7 +26,7 @@ public class MyFragmentManager extends FragmentStateAdapter {
 
         }
         else {
-            return new VocFragment();
+            return new QCMFragment();
         }
 
 

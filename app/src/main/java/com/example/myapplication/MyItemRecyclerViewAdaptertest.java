@@ -72,7 +72,7 @@ public class MyItemRecyclerViewAdaptertest extends RecyclerView.Adapter<MyItemRe
                 SharedPreferences sharedPreferencesTextId = mContext.getSharedPreferences("TEXTID", MODE_PRIVATE);
 
                 System.out.println(sharedPreferencesTextId.getString("textID", "0"));
-                loadText(sharedPreferencesTextId.getString("textID", "0"));
+                //loadText(sharedPreferencesTextId.getString("textID", "0"));
 
                 String myString = retrieveSharedPreferencesData();
                 System.out.println(myString);
@@ -89,7 +89,7 @@ public class MyItemRecyclerViewAdaptertest extends RecyclerView.Adapter<MyItemRe
 
                 String savedText = sharedPreferencesTextId.getString(textId, "Default");
         Log.d("TextFragment", "fragment = " + fragment);
-        fragment.setEditText("Hello");
+        //fragment.setEditText("Hello");
     }
 
     @Override

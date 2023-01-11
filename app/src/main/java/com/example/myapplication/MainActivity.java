@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.tabs.TabLayout;
@@ -36,7 +37,7 @@ import android.widget.RelativeLayout;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Interface {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
@@ -46,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager2 viewPager2;
     private MyFragmentManager adapter;
 
+    @Override
+    public void startMyIntent(Intent i) {
+        startActivity(i);
+    }
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
