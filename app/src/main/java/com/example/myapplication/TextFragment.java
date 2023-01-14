@@ -136,6 +136,14 @@ public class TextFragment extends Fragment {
         }
     }
 
+    public void onStart(){
+        super.onStart();
+        loadText(sharedPrefTextId.getString("textID", "0"));
+    }
+    public void onResume(){
+        super.onResume();
+        loadText(sharedPrefTextId.getString("textID", "0"));
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -155,6 +163,7 @@ public class TextFragment extends Fragment {
         sharedPref = getActivity().getSharedPreferences("MY_SHARED_PREF",Context.MODE_PRIVATE);
         sharedPrefTextId = getActivity().getSharedPreferences("TEXTID", MODE_PRIVATE);
         editor = sharedPref.edit();
+
 
         final ViewPager2 viewPager2 = mainView.findViewById(R.id.viewPager2);
 
@@ -265,7 +274,12 @@ public class TextFragment extends Fragment {
 
 
     public void loadText(String textId) {
+<<<<<<< HEAD
         String savedText = sharedPref.getString(textId, "");
+=======
+        String savedText = sharedPref.getString(textId, "Default");
+        System.out.println("Ca marche ca marche");
+>>>>>>> df5e1ccbe72a6276b1b9a46060991d64be3a7cdc
         pastText.setText(savedText);
     }
 

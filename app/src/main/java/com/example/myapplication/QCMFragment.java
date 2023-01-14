@@ -18,6 +18,8 @@ import android.widget.Toast;
  * create an instance of this fragment.
  */
 public class QCMFragment extends Fragment {
+
+
     public Button launchQCM;
 
     // TODO: Rename parameter arguments, choose names that match
@@ -67,24 +69,31 @@ public class QCMFragment extends Fragment {
 
 
         View view = inflater.inflate(R.layout.fragment_q_c_m, container, false);
-        launchQCM = (Button) view.findViewById(R.id.QCM);
+        Button launchQCM = (Button) view.findViewById(R.id.QCM);
         // Inflate the layout for this fragment
         System.out.println("Fonctionne");
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> df5e1ccbe72a6276b1b9a46060991d64be3a7cdc
 
         launchQCM.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(getActivity(), QCM.class);
+                QCMFragment.this.startActivity(intent);
 
                 Intent intent = new Intent(getActivity(), QCM.class);
                 QCMFragment.this.startActivity(intent);
                 System.out.println("CLICK");
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> df5e1ccbe72a6276b1b9a46060991d64be3a7cdc
 
             }
         });
