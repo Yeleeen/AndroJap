@@ -39,6 +39,7 @@ public class PlaceholderContent {
 
     private static PlaceholderItem createPlaceholderItem(int position) {
         return new PlaceholderItem(String.valueOf(position), "Item " + position, makeDetails(position));
+
     }
 
     private static String makeDetails(int position) {
@@ -63,6 +64,7 @@ public class PlaceholderContent {
             this.content = content;
             this.details = details;
         }
+        
 
         @Override
         public String toString() {

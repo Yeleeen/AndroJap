@@ -69,6 +69,7 @@ public class MyItemRecyclerViewAdaptertest extends RecyclerView.Adapter<MyItemRe
 
                 System.out.println(holder.mItem.id);
                 setSharedPreferencesTextNumberData(holder.mItem.id);
+
                 SharedPreferences sharedPreferencesTextId = mContext.getSharedPreferences("TEXTID", MODE_PRIVATE);
 
                 System.out.println(sharedPreferencesTextId.getString("textID", "0"));

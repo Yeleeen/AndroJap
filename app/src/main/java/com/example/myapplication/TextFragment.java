@@ -109,6 +109,22 @@ public class TextFragment extends Fragment {
     }
 
     @Override
+    public void onStart()
+    {
+        super.onStart();
+        loadText(sharedPrefTextId.getString("textID", "0"));
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        loadText(sharedPrefTextId.getString("textID", "0"));
+    }
+
+
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -249,7 +265,7 @@ public class TextFragment extends Fragment {
 
 
     public void loadText(String textId) {
-        String savedText = sharedPref.getString(textId, "Default");
+        String savedText = sharedPref.getString(textId, "");
         pastText.setText(savedText);
     }
 

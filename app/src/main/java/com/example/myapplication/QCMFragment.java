@@ -71,25 +71,25 @@ public class QCMFragment extends Fragment {
         // Inflate the layout for this fragment
         System.out.println("Fonctionne");
 
-        Intent intent = new Intent(getActivity(), QCM.class);
-        QCMFragment.this.startActivity(intent);
+
+
+
 
         launchQCM.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
 
+                Intent intent = new Intent(getActivity(), QCM.class);
+                QCMFragment.this.startActivity(intent);
                 System.out.println("CLICK");
-                Activity parentActivity = getActivity();
 
-
-                ((Interface)parentActivity).startMyIntent(intent);
 
 
             }
         });
 
-        return inflater.inflate(R.layout.fragment_q_c_m, container, false);
+        return view;
 
 
     }
