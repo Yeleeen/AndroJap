@@ -74,26 +74,15 @@ public class QCMFragment extends Fragment {
         System.out.println("Fonctionne");
 
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> df5e1ccbe72a6276b1b9a46060991d64be3a7cdc
 
         launchQCM.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), QCM.class);
-                QCMFragment.this.startActivity(intent);
 
                 Intent intent = new Intent(getActivity(), QCM.class);
                 QCMFragment.this.startActivity(intent);
                 System.out.println("CLICK");
 
-<<<<<<< HEAD
-
-=======
->>>>>>> df5e1ccbe72a6276b1b9a46060991d64be3a7cdc
 
             }
         });

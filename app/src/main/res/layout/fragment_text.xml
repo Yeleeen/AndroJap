@@ -97,9 +97,10 @@
         android:layout_height="match_parent"
 
         android:lineSpacingExtra="@dimen/_8sdp"
-        android:background="@null"
         android:gravity="top"
         android:paddingVertical="@dimen/_12sdp"
+        android:background="@null"
+        android:textColor="@android:color/black"
 
 
         android:inputType="textMultiLine"

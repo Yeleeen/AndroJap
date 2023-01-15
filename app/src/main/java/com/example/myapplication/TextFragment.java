@@ -7,34 +7,30 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
 
-import androidx.constraintlayout.motion.widget.Debug;
-import androidx.core.text.HtmlCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.SystemClock;
-import android.text.Html;
 import android.text.Layout;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
-import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.atilika.kuromoji.ipadic.Token;
@@ -43,6 +39,11 @@ import com.example.myapplication.Class.Kana;
 import com.example.myapplication.Class.RubySpan;
 
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +59,7 @@ public class TextFragment extends Fragment {
     public Button editButton;
     public Button kanaButton;
     public Button saveButton;
+    public PopupWindow mPopupWindow;
 
     public ArrayList<Text> textList = new ArrayList<Text>();
 
@@ -108,19 +110,6 @@ public class TextFragment extends Fragment {
         return fragment;
     }
 
-    @Override
-    public void onStart()
-    {
-        super.onStart();
-        loadText(sharedPrefTextId.getString("textID", "0"));
-    }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-        loadText(sharedPrefTextId.getString("textID", "0"));
-    }
 
 
 
@@ -150,6 +139,9 @@ public class TextFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_text, container, false);
         View mainView = inflater.inflate(R.layout.activity_main,container,false);
+        View popupView = inflater.inflate(R.layout.popup_window, null);
+        mPopupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        TextView annotationText = popupView.findViewById(R.id.annotation_text);
         pastText = (EditText) view.findViewById(R.id.textArea);
         titleText = (EditText) view.findViewById(R.id.title);
         pastingButton = (Button) view.findViewById(R.id.pastButton);
@@ -163,6 +155,12 @@ public class TextFragment extends Fragment {
         sharedPref = getActivity().getSharedPreferences("MY_SHARED_PREF",Context.MODE_PRIVATE);
         sharedPrefTextId = getActivity().getSharedPreferences("TEXTID", MODE_PRIVATE);
         editor = sharedPref.edit();
+
+
+
+
+
+
 
 
         final ViewPager2 viewPager2 = mainView.findViewById(R.id.viewPager2);
@@ -245,11 +243,90 @@ public class TextFragment extends Fragment {
                     pastText.setFocusable(false);
                     focus = false;
                     viewPager2.setUserInputEnabled(false);
+                    SpannableString spannableString = new SpannableString(pastText.getText());
+                    int start = 0;
+                    int end = 0;
+                    int cursor = 0;
+                    List<Token> tokens = tokenizer.tokenize(pastText.getText().toString());
+
+                    for (Token token : tokens) {
+                        end = start + token.getSurface().length();
+
+                        System.out.print("Token length value :");
+                        System.out.println(token.getSurface().length());
+                        System.out.print("End value :");
+                        System.out.println(end);
+                        int finalCursor = cursor;
+
+                        ClickableSpan clickableSpan = new MyClickableSpan() {
+                            @Override
+                            public void onClick(View view) {
+
+                                try {
+                                    InputStream input = getResources().openRawResource(R.raw.jmdict);
+                                    Document doc = Jsoup.parse(input, "UTF-8", "");
+                                    System.out.println(doc.select("entry").first().select("gloss").text());
+                                } catch (IOException e) {
+                                    System.out.println("can't access jmdict");
+                                    e.printStackTrace();
+                                }
+                                int[] location = new int[2];
+
+                                pastText.getLocationOnScreen(location);
+
+                                int offset = pastText.getOffsetForPosition((int) view.getX(), (int) view.getY());
+                                Layout layout = pastText.getLayout();
+                                Rect bounds = new Rect();
+                                int line = pastText.getLayout().getLineForOffset(finalCursor);
+                                int lineStart = layout.getLineStart(line);
+                                int lineEnd = layout.getLineEnd(line);
+                                String lineText = layout.getText().subSequence(lineStart,lineEnd).toString();
+                                pastText.getLineBounds(line, bounds);
+                                int x = (int) (bounds.left+ location[0] + layout.getPrimaryHorizontal( lineText.lastIndexOf(token.getSurface())));
+                                int y = bounds.top + location[1] + pastText.getCompoundPaddingTop();
+
+                                mPopupWindow.showAtLocation(view, Gravity.NO_GRAVITY, x, y);
+                                mPopupWindow.update(x, y-350, -1, -1);
+                                System.out.println("position x : " + x+"      position y : "+ y);
+                                System.out.println("position location x : " + location[0] + "Position location y :" + location[1]);
+                                System.out.println("Line : " + line);
+                                System.out.println("x layout : " + layout.getPrimaryHorizontal(lineStart  ));
+                                annotationText.setText(token.getSurface());
+                                System.out.println("working I guess :/");
+                                System.out.println(token.getSurface());
+                            }
+                        };
+
+                        TextPaint textPaint = pastText.getPaint();
+
+                        textPaint.setColor(Color.BLACK);
+                        textPaint.setUnderlineText(false);
+
+                        spannableString.setSpan(clickableSpan,cursor,cursor+token.getSurface().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        cursor = cursor + token.getSurface().length();
+                        start = end + 1;
+
+                    }
+                    pastText.setText(spannableString);
+                    pastText.setMovementMethod(LinkMovementMethod.getInstance());
+                    pastText.setBackground(null);
+                    pastText.setTextColor(Color.BLACK);
+                    pastText.setHighlightColor(Color.TRANSPARENT);
                 }
                 else {
                     pastText.setFocusableInTouchMode(true);
                     focus = true;
+                    mPopupWindow.dismiss();
+
+                    TextPaint textPaint = pastText.getPaint();
+
+                    textPaint.setColor(Color.BLACK);
+                    textPaint.setUnderlineText(false);
+                    pastText.setText(new SpannableString(pastText.getText()));
                     viewPager2.setUserInputEnabled(true);
+                    pastText.setBackground(null);
+                    pastText.setTextColor(Color.BLACK);
+                    pastText.setHighlightColor(Color.TRANSPARENT);
                 }
 
             }
@@ -274,13 +351,20 @@ public class TextFragment extends Fragment {
 
 
     public void loadText(String textId) {
-<<<<<<< HEAD
+
         String savedText = sharedPref.getString(textId, "");
-=======
-        String savedText = sharedPref.getString(textId, "Default");
+
         System.out.println("Ca marche ca marche");
->>>>>>> df5e1ccbe72a6276b1b9a46060991d64be3a7cdc
+
         pastText.setText(savedText);
+    }
+    private void showPopupWindow(View view, int[] location) {
+        // Set the annotation text for the clicked word
+        TextView annotationText = mPopupWindow.getContentView().findViewById(R.id.annotation_text);
+        annotationText.setText("Annotation for the clicked word");
+
+        // Show the PopupWindow at the x and y position of the clicked word
+        mPopupWindow.showAtLocation(view, Gravity.NO_GRAVITY, location[0], location[1]);
     }
 
     public void addText(){

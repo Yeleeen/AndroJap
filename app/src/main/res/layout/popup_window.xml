@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/tabdrawable"
+    android:orientation="vertical"
+    android:padding="10dp"
+
+    android:layout_gravity="center_horizontal"
+
+    android:layout_marginTop="@dimen/_50sdp">
+
+
+
+    <TextView
+        android:id="@+id/annotation_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:text="Default" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/red"
+        android:minWidth="@dimen/_20sdp"
+        android:minHeight="@dimen/_20sdp"
+        android:background="@drawable/round_button"
+
+
+
+        android:text="+"/>
+
+
+
+</LinearLayout>
