@@ -7,6 +7,8 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -35,15 +37,22 @@ import android.widget.TextView;
 
 import com.atilika.kuromoji.ipadic.Token;
 import com.atilika.kuromoji.ipadic.Tokenizer;
+import com.example.myapplication.Class.JMDict;
+import com.example.myapplication.Class.JMDictHelper;
+import com.example.myapplication.Class.JMDictParser;
+import com.example.myapplication.Class.JMDictSAXParser;
+import com.example.myapplication.Class.JMDictSQLiteHelper;
+import com.example.myapplication.Class.JSONQuery;
 import com.example.myapplication.Class.Kana;
 import com.example.myapplication.Class.RubySpan;
+import com.google.gson.Gson;
 
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +68,7 @@ public class TextFragment extends Fragment {
     public Button editButton;
     public Button kanaButton;
     public Button saveButton;
+    public Button addVoc;
     public PopupWindow mPopupWindow;
 
     public ArrayList<Text> textList = new ArrayList<Text>();
@@ -66,6 +76,7 @@ public class TextFragment extends Fragment {
     SharedPreferences sharedPref;
     SharedPreferences sharedPrefTextId;
     SharedPreferences.Editor editor;
+    private JMDictSQLiteHelper helper;
 
     Kana kanaString = new Kana();
     public boolean focus = true;
@@ -73,6 +84,7 @@ public class TextFragment extends Fragment {
     ClipboardManager clipboardManager;
     EditText pastText;
     EditText titleText;
+    String actualToken;
     ViewPager2 viewPager2;
 
 
@@ -136,12 +148,17 @@ public class TextFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
+
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_text, container, false);
         View mainView = inflater.inflate(R.layout.activity_main,container,false);
         View popupView = inflater.inflate(R.layout.popup_window, null);
         mPopupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         TextView annotationText = popupView.findViewById(R.id.annotation_text);
+        addVoc = (Button) popupView.findViewById(R.id.addvoc);
         pastText = (EditText) view.findViewById(R.id.textArea);
         titleText = (EditText) view.findViewById(R.id.title);
         pastingButton = (Button) view.findViewById(R.id.pastButton);
@@ -151,10 +168,12 @@ public class TextFragment extends Fragment {
 
 
 
+
         clipboardManager = (ClipboardManager) view.getContext().getSystemService(CLIPBOARD_SERVICE);
         sharedPref = getActivity().getSharedPreferences("MY_SHARED_PREF",Context.MODE_PRIVATE);
         sharedPrefTextId = getActivity().getSharedPreferences("TEXTID", MODE_PRIVATE);
         editor = sharedPref.edit();
+
 
 
 
@@ -250,26 +269,19 @@ public class TextFragment extends Fragment {
                     List<Token> tokens = tokenizer.tokenize(pastText.getText().toString());
 
                     for (Token token : tokens) {
+                        actualToken = token.getSurface();
                         end = start + token.getSurface().length();
 
-                        System.out.print("Token length value :");
-                        System.out.println(token.getSurface().length());
-                        System.out.print("End value :");
-                        System.out.println(end);
+                        //System.out.print("Token length value :");
+                        //System.out.println(token.getSurface().length());
+                        //System.out.print("End value :");
+                        //System.out.println(end);
                         int finalCursor = cursor;
 
                         ClickableSpan clickableSpan = new MyClickableSpan() {
                             @Override
                             public void onClick(View view) {
 
-                                try {
-                                    InputStream input = getResources().openRawResource(R.raw.jmdict);
-                                    Document doc = Jsoup.parse(input, "UTF-8", "");
-                                    System.out.println(doc.select("entry").first().select("gloss").text());
-                                } catch (IOException e) {
-                                    System.out.println("can't access jmdict");
-                                    e.printStackTrace();
-                                }
                                 int[] location = new int[2];
 
                                 pastText.getLocationOnScreen(location);
@@ -291,9 +303,12 @@ public class TextFragment extends Fragment {
                                 System.out.println("position location x : " + location[0] + "Position location y :" + location[1]);
                                 System.out.println("Line : " + line);
                                 System.out.println("x layout : " + layout.getPrimaryHorizontal(lineStart  ));
-                                annotationText.setText(token.getSurface());
+                                String dictWord = token.getSurface() +"\n"+ JSONQuery.searchWord(getContext(),token.getSurface());
+                                annotationText.setText(dictWord);
+
                                 System.out.println("working I guess :/");
                                 System.out.println(token.getSurface());
+
                             }
                         };
 
@@ -331,9 +346,17 @@ public class TextFragment extends Fragment {
 
             }
         });
+        addVoc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                annotationText.getText();
+            }
+        });
 
         return view;
     }
+
+
     public void saveText(String textId) {
 
             String text = pastText.getText().toString();
@@ -374,6 +397,30 @@ public class TextFragment extends Fragment {
         pastText.setText(text);
     }
 
+
+    public String getDefinition(String word) {
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor cursor = db.query("jmdict", new String[]{"definition"}, "kanji = ?", new String[]{word}, null, null, null);
+        String definition = null;
+        if (cursor.moveToFirst()) {
+            definition = cursor.getString(0);
+            Log.d("Definition", definition);
+        }
+        cursor.close();
+        db.close();
+        return definition;
+    }
+    public void showData(){
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor cursor = db.query("jmdict", new String[]{"kanji", "definition"}, null, null, null, null, null);
+        while (cursor.moveToNext()) {
+            String kanji = cursor.getString(0);
+            String definition = cursor.getString(1);
+            Log.d("Data", "kanji: " + kanji + " , definition: " + definition);
+        }
+        cursor.close();
+        db.close();
+    }
 
     public void simulateSwipeLeft(View view) {
         // Get a reference to the view
